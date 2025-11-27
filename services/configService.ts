@@ -17,8 +17,9 @@ const hasFinnhubKey = !!metaEnv.VITE_FINNHUB_API_KEY;
 // Safe check for Gemini Key (process.env might not exist in browser runtime)
 let hasGeminiKey = false;
 try {
-  // Check global process object existence first to avoid ReferenceError
-  if (typeof process !== 'undefined' && process.env) {
+  // In Vite, process.env.API_KEY is replaced by a string literal at build time.
+  // We check it directly. Use try-catch to handle ReferenceError if process is missing and not replaced.
+  if (process.env.API_KEY) {
     hasGeminiKey = !!process.env.API_KEY;
   }
 } catch (e) {
@@ -50,9 +51,8 @@ export const getEnv = () => {
   const env = getMetaEnv();
   let geminiKey = undefined;
   try {
-    if (typeof process !== 'undefined' && process.env) {
-      geminiKey = process.env.API_KEY;
-    }
+    // Direct access to support Vite replacement
+    geminiKey = process.env.API_KEY;
   } catch {}
 
   return {
